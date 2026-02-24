@@ -4,12 +4,18 @@ import {
   DragEndEvent,
   PointerSensor,
   useSensor,
-  useSensors,
+  useSensors
 } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
 import { TreeNode } from "./TreeNode";
 import { TreeNodeData } from "./types";
-import { findNode, removeNode, isDescendant } from "./treeUtils";
+import {
+  findNode,
+  removeNode,
+  isDescendant,
+  findNodeAndParent,
+} from "./treeUtils";
 
 const initialTree: TreeNodeData[] = [
   { id: "A", label: "Level A", hasChildren: true },
@@ -24,30 +30,60 @@ export const TreeView = () => {
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
 
-    const dragged = findNode(tree, active.id as string);
-    const target = findNode(tree, over.id as string);
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    const { node: dragged, parent: sourceParent } = findNodeAndParent(
+      tree,
+      activeId,
+    );
+
+    const { node: target, parent: targetParent } = findNodeAndParent(
+      tree,
+      overId,
+    );
 
     if (!dragged || !target) return;
-    if (isDescendant(dragged, target.id)) return;
+    if (isDescendant(dragged, overId)) return;
 
-    const newTree = removeNode([...tree], dragged.id);
+    // 🔁 REORDER (same level)
+    if (sourceParent?.id === targetParent?.id) {
+      const siblings = sourceParent?.children ?? tree;
 
-    target.children = target.children || [];
-    target.children.push(dragged);
+      const oldIndex = siblings.findIndex((n) => n.id === activeId);
+      const newIndex = siblings.findIndex((n) => n.id === overId);
 
-    setTree([...newTree]);
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const reordered = arrayMove(siblings, oldIndex, newIndex);
+
+      if (sourceParent) {
+        sourceParent.children = reordered;
+      } else {
+        setTree(reordered);
+        return;
+      }
+    }
+    // 📦 MOVE (different parents)
+    else {
+      const sourceList = sourceParent?.children ?? tree;
+
+      sourceList.splice(
+        sourceList.findIndex((n) => n.id === activeId),
+        1,
+      );
+
+      target.children = [...(target.children ?? []), dragged];
+    }
+
+    setTree([...tree]);
   };
 
   return (
     <DndContext sensors={sensors} onDragEnd={onDragEnd}>
       <div className="tree">
         {tree.map((node) => (
-          <TreeNode
-            key={node.id}
-            node={node}
-            tree={tree}
-            setTree={setTree}
-          />
+          <TreeNode key={node.id} node={node} tree={tree} setTree={setTree} />
         ))}
       </div>
     </DndContext>

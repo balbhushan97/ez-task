@@ -14,6 +14,20 @@ export const findNode = (
   }
   return null;
 };
+export const findNodeAndParent = (
+  nodes: TreeNodeData[],
+  id: string,
+  parent: TreeNodeData | null = null
+): { node: TreeNodeData | null; parent: TreeNodeData | null } => {
+  for (const n of nodes) {
+    if (n.id === id) return { node: n, parent };
+    if (n.children) {
+      const res = findNodeAndParent(n.children, id, n);
+      if (res.node) return res;
+    }
+  }
+  return { node: null, parent: null };
+};
 
 export const removeNode = (
   nodes: TreeNodeData[],

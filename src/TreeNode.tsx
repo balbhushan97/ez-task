@@ -1,7 +1,7 @@
 // TreeNode.tsx
 import { useState } from "react";
 import { TreeNodeData } from "./types";
-import { fakeLoadChildren } from "./api";
+import { loadChildren } from "./api";
 import { removeNode } from "./treeUtils";
 import { useDraggable, useDroppable } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
@@ -36,7 +36,7 @@ export const TreeNode = ({ node, tree, setTree }: Props) => {
       node.isLoading = true;
       setTree([...tree]);
 
-      node.children = await fakeLoadChildren(node.id);
+      node.children = await loadChildren(node.id);
       node.isLoading = false;
     }
     setExpanded(!expanded);

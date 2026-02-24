@@ -1,7 +1,7 @@
 // api.ts
 import { TreeNodeData } from "./types";
 
-export const fakeLoadChildren = (
+export const loadChildren = (
   parentId: string
 ): Promise<TreeNodeData[]> =>
   new Promise((resolve) => {

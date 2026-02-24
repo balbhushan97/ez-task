@@ -11,8 +11,6 @@ import { useState } from "react";
 import { TreeNode } from "./TreeNode";
 import { TreeNodeData } from "./types";
 import {
-  findNode,
-  removeNode,
   isDescendant,
   findNodeAndParent,
 } from "./treeUtils";

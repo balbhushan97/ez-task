@@ -1,4 +1,3 @@
-// treeUtils.ts
 import { TreeNodeData } from "./types";
 
 export const findNode = (

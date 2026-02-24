@@ -1,4 +1,3 @@
-// api.ts
 import { TreeNodeData } from "./types";
 
 export const loadChildren = (

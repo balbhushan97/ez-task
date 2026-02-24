@@ -1,4 +1,3 @@
-// TreeNode.tsx
 import { useState } from "react";
 import { TreeNodeData } from "./types";
 import { loadChildren } from "./api";
